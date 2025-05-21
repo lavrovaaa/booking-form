@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Бронирование</title>
+
+
+
+
+  <!-- Flatpickr CSS -->
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"/>
+
+
+
+
+  <style>
+
+    body {
+
+      font-family: Arial, sans-serif;
+
+      max-width: 500px;
+
+      margin: 40px auto;
+
+      padding: 20px;
+
+      border: 1px solid #ddd;
+
+      border-radius: 10px;
+
+    }
+
+    label {
+
+      font-weight: bold;
+
+      margin-top: 15px;
+
+      display: block;
+
+    }
+
+    input, button {
+
+      padding: 10px;
+
+      width: 100%;
+
+      margin-top: 5px;
+
+      margin-bottom: 15px;
+
+      box-sizing: border-box;
+
+    }
+
+    .summary {
+
+      font-size: 1.1em;
+
+      margin-top: 10px;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <h2>Забронируй участие</h2>
+
+
+
+
+  <label for="daterange">Выбери даты:</label>
+
+  <input type="text" id="daterange" placeholder="Выбери диапазон дат" readonly />
+
+
+
+
+  <label for="promo">Промокод (если есть):</label>
+
+  <input type="text" id="promo" placeholder="Введите промокод" />
+
+
+
+
+  <div class="summary">
+
+    Кол-во дней: <span id="days">0</span><br />
+
+    Итого к оплате: <span id="total">0</span> ₽
+
+  </div>
+
+
+
+
+  <button onclick="pay()">Оплатить через СБП</button>
+
+
+
+
+  <!-- Flatpickr -->
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/rangePlugin.js"></script>
+
+
+
+
+  <script>
+
+    let days = 0;
+
+    let pricePerDay = 2000;
+
+    let discount = 0;
+
+
+
+
+    flatpickr("#daterange", {
+
+      mode: "range",
+
+      dateFormat: "Y-m-d",
+
+      locale: "ru",
+
+      onChange: function(selectedDates) {
+
+        if (selectedDates.length === 2) {
+
+          const start = selectedDates[0];
+
+          const end = selectedDates[1];
+
+          const diffTime = Math.abs(end - start);
+
+          days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          updateTotal();
+
+        }
+
+      }
+
+    });
+
+
+
+
+    document.getElementById("promo").addEventListener("input", function() {
+
+      const code = this.value.trim().toLowerCase();
+
+      discount = (code === "скидка10") ? 0.1 : 0;
+
+      updateTotal();
+
+    });
+
+
+
+
+    function updateTotal() {
+
+      const total = Math.round(days * pricePerDay * (1 - discount));
+
+      document.getElementById("days").textContent = days;
+
+      document.getElementById("total").textContent = total;
+
+    }
+
+
+
+
+    function pay() {
+
+      const amount = document.getElementById("total").textContent;
+
+      if (amount === "0") {
+
+        alert("Пожалуйста, выберите даты.");
+
+        return;
+
+      }
+
+
+
+
+      // Пример: просто переход на ссылку СБП или QR-код
+
+      alert("Здесь будет переход на оплату через СБП на сумму: " + amount + " ₽");
+
+      // window.location.href = "https://your-sbp-payment-link";
+
+    }
+
+  </script>
+
+</body>
+
+</html>
